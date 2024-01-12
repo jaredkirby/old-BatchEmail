@@ -41,7 +41,7 @@ primary_recipient = st.text_input(
 )
 cc_recipients = st.text_area(
     "CC recipient email addresses (one per line)",
-    value="Sally.Kim@ajinomotofoods.com\nAdrian.Juarez@ajinomotofoods.com\nRoxy@cemm.com",
+    value="Sally.Kim@ajinomotofoods.com\nAngel.Alvarez@ajinomotofoods.com\nRoxy@cemm.com",
 )
 uploaded_files = st.file_uploader("Select files to send", accept_multiple_files=True)
 email_body = st.text_area("Email body")
