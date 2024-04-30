@@ -5,6 +5,10 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.base import MIMEBase
 from email.mime.text import MIMEText
 from email import encoders
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 # create a Streamlit UI to collect user input
 st.set_page_config(page_icon="🚀", page_title="Send EMAILz")
@@ -35,7 +39,7 @@ st.code(code, language="python")
 # create a Streamlit UI to collect user input
 st.title("Send Files by Email")
 sender_email = st.text_input("Sender email address", value="roxy@cemm.com")
-sender_password = st.text_input("Sender email password", type="password")
+access_password = st.text_input("Access password", type="password")
 primary_recipient = st.text_input(
     "Primary recipient email address", value="apinvoices@ajinomotofoods.com"
 )
@@ -83,7 +87,7 @@ def send_email(server, sender_email, recipient_emails, message):
 
 
 def send_emails(
-    sender_email, sender_password, primary_recipient, cc_recipients, uploaded_files
+    sender_email, access_password, primary_recipient, cc_recipients, uploaded_files
 ):
     # set up SMTP server and login credentials
     smtp_server = "smtp.office365.com"
@@ -94,36 +98,41 @@ def send_emails(
     all_recipients = [primary_recipient] + cc_recipients_list
 
     try:
-        server = setup_email_client(
-            smtp_server, smtp_port, sender_email, sender_password
-        )
-
-        # iterate over files and send each one in a separate email
-        for uploaded_file in uploaded_files:
-            filename = uploaded_file.name
-            file_data = uploaded_file.read()
-
-            # construct email message
-            message = create_email_message(
-                sender_email,
-                primary_recipient,
-                cc_recipients_list,
-                filename,
-                email_body,
-                file_data,
+        # Compare the access password entered by the user with the stored access password
+        if access_password == os.getenv("ACCESS_PASSWORD"):
+            sender_password = sender_password = os.getenv("SENDER_EMAIL_PASSWORD")
+            server = setup_email_client(
+                smtp_server, smtp_port, sender_email, sender_password
             )
-            with st.spinner(
-                f"Sending {filename} to {primary_recipient} with {cc_recipients_list} as CCs"
-            ):
-                send_email(server, sender_email, all_recipients, message)
-            st.success(
-                f"Sent {filename} to {primary_recipient} with {cc_recipients_list} as CCs"
-            )
+
+            # iterate over files and send each one in a separate email
+            for uploaded_file in uploaded_files:
+                filename = uploaded_file.name
+                file_data = uploaded_file.read()
+
+                # construct email message
+                message = create_email_message(
+                    sender_email,
+                    primary_recipient,
+                    cc_recipients_list,
+                    filename,
+                    email_body,
+                    file_data,
+                )
+                with st.spinner(
+                    f"Sending {filename} to {primary_recipient} with {cc_recipients_list} as CCs"
+                ):
+                    send_email(server, sender_email, all_recipients, message)
+                st.success(
+                    f"Sent {filename} to {primary_recipient} with {cc_recipients_list} as CCs"
+                )
+        else:
+            st.error("Access password is incorrect.")
     except Exception as e:
         st.error(f"An error occurred: {e}")
 
 
 if st.button("Send Emails"):
     send_emails(
-        sender_email, sender_password, primary_recipient, cc_recipients, uploaded_files
+        sender_email, access_password, primary_recipient, cc_recipients, uploaded_files
     )
