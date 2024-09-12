@@ -21,6 +21,14 @@ CATEGORIES = {
     "Noodles": ["caleb.park@ajinomotofoods.com"],
 }
 
+# Constant primary recipients
+PRIMARY_RECIPIENTS = [
+    "apinvoices@ajinomotofoods.com",
+    "Sally.Kim@ajinomotofoods.com",
+    "Suzette.Magpayo@ajinomotofoods.com",
+    "Roxy@cemm.com",
+]
+
 
 def get_random_cat_image_url():
     url = "https://api.thecatapi.com/v1/images/search"
@@ -54,15 +62,15 @@ selected_categories = st.multiselect(
     "Select invoice categories", options=list(CATEGORIES.keys())
 )
 
-# Generate recipient list based on selected categories
-primary_recipients = set()
+# Generate CC recipient list based on selected categories
+cc_recipients = set()
 for category in selected_categories:
-    primary_recipients.update(CATEGORIES[category])
+    cc_recipients.update(CATEGORIES[category])
 
 # Display and allow editing of primary recipient list
 st.subheader("Primary Recipients")
 primary_recipients = st.text_area(
-    "Edit primary recipients (one email per line)", value="\n".join(primary_recipients)
+    "Edit primary recipients (one email per line)", value="\n".join(PRIMARY_RECIPIENTS)
 )
 
 # Convert primary recipients back to a list
@@ -70,12 +78,13 @@ primary_recipient_list = [
     email.strip() for email in primary_recipients.split("\n") if email.strip()
 ]
 
-# CC recipients
+# Display and allow editing of CC recipient list
 st.subheader("CC Recipients")
 cc_recipients = st.text_area(
-    "CC recipient email addresses (one per line)",
-    value="Sally.Kim@ajinomotofoods.com\nSuzette.Magpayo@ajinomotofoods.com\nRoxy@cemm.com",
+    "Edit CC recipients (one email per line)", value="\n".join(cc_recipients)
 )
+
+# Convert CC recipients back to a list
 cc_recipient_list = [
     email.strip() for email in cc_recipients.split("\n") if email.strip()
 ]
