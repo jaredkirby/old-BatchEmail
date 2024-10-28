@@ -25,7 +25,6 @@ CATEGORIES = {
 PRIMARY_RECIPIENTS = [
     "apinvoices@ajinomotofoods.com",
     "Sally.Kim@ajinomotofoods.com",
-    "Suzette.Magpayo@ajinomotofoods.com",
     "Roxy@cemm.com",
 ]
 
